@@ -6,7 +6,7 @@
 
 [![Release](https://img.shields.io/github/v/release/cave-nerd/chronos-task-tracker?style=flat-square&color=6366f1)](https://github.com/cave-nerd/chronos-task-tracker/releases/latest)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-blue?style=flat-square&color=0ea5e9)](https://github.com/cave-nerd/chronos-task-tracker/releases/latest)
-[![License](https://img.shields.io/github/license/cave-nerd/chronos-task-tracker?style=flat-square&color=10b981)](LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/license-GPLv3-10b981?style=flat-square)](LICENSE)
 [![Built with Electron](https://img.shields.io/badge/built%20with-Electron-47848f?style=flat-square&logo=electron)](https://www.electronjs.org/)
 
 [Download](#-download) · [Features](#-features) · [Getting Started](#-getting-started) · [Monday.com Integration](#-mondaycom-integration) · [Contributing](#-contributing)
@@ -143,6 +143,14 @@ chronos-task-tracker/
 ## 🤝 Contributing
 
 Issues and pull requests are welcome. For significant changes please open an issue first to discuss what you'd like to change.
+
+---
+
+## 📄 License
+
+This project is licensed under the [GNU General Public License v3.0](LICENSE).
+
+You are free to use, modify, and distribute this software under the terms of the GPLv3. Any distributed modifications must also be released under the GPLv3.
 
 ---
 
