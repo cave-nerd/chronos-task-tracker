@@ -5,16 +5,13 @@
   "asar": true,
   "productName": "ChronosTaskTracker",
   "directories": {
+    "buildResources": "build",
     "output": "release/${version}"
   },
   "files": [
     "dist",
     "dist-electron"
   ],
-  "directories": {
-    "buildResources": "build",
-    "output": "release/${version}"
-  },
   "linux": {
     "target": [
       "AppImage"
@@ -39,11 +36,5 @@
     "perMachine": false,
     "allowToChangeInstallationDirectory": true,
     "deleteAppDataOnUninstall": false
-  },
-  "linux": {
-    "target": [
-      "AppImage"
-    ],
-    "artifactName": "${productName}-Linux-${version}.${ext}"
   }
 }
