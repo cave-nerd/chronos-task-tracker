@@ -28,6 +28,7 @@ export interface Settings {
   autoArchiveAtEndOfDay: boolean;
   lastAutoArchiveDate: string; // YYYY-MM-DD
   lastWorkArchiveDate?: string; // YYYY-MM-DD
+  theme?: string;
   integrations?: {
     monday?: {
       apiKey: string;

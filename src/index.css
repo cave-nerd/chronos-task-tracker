@@ -5,21 +5,60 @@
 
   color-scheme: dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #0f172a;
+  background-color: var(--app-bg-color);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Glassmorphism & Accents */
-  --glass-bg: rgba(30, 41, 59, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  --accent-primary: #38bdf8;
-  --accent-secondary: #818cf8;
   --accent-danger: #f43f5e;
   --accent-success: #10b981;
+}
+
+[data-theme="slate"] {
+  --app-bg-color: #0f172a;
+  --body-bg: radial-gradient(circle at top left, #1e293b 0%, #0f172a 100%);
+  --root-bg: radial-gradient(circle at top right, rgba(56, 189, 248, 0.05), transparent),
+             radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.05), transparent);
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --accent-primary: #38bdf8;
+  --accent-secondary: #818cf8;
+}
+
+[data-theme="midnight"] {
+  --app-bg-color: #09090b;
+  --body-bg: radial-gradient(circle at top left, #18181b 0%, #09090b 100%);
+  --root-bg: radial-gradient(circle at top right, rgba(168, 85, 247, 0.05), transparent),
+             radial-gradient(circle at bottom left, rgba(236, 72, 153, 0.05), transparent);
+  --glass-bg: rgba(24, 24, 27, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --accent-primary: #a855f7;
+  --accent-secondary: #ec4899;
+}
+
+[data-theme="forest"] {
+  --app-bg-color: #064e3b;
+  --body-bg: radial-gradient(circle at top left, #065f46 0%, #064e3b 100%);
+  --root-bg: radial-gradient(circle at top right, rgba(52, 211, 153, 0.05), transparent),
+             radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.05), transparent);
+  --glass-bg: rgba(6, 78, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --accent-primary: #34d399;
+  --accent-secondary: #10b981;
+}
+
+[data-theme="sunset"] {
+  --app-bg-color: #451a03;
+  --body-bg: radial-gradient(circle at top left, #78350f 0%, #451a03 100%);
+  --root-bg: radial-gradient(circle at top right, rgba(251, 146, 60, 0.1), transparent),
+             radial-gradient(circle at bottom left, rgba(244, 63, 94, 0.1), transparent);
+  --glass-bg: rgba(120, 53, 15, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --accent-primary: #fb923c;
+  --accent-secondary: #f43f5e;
 }
 
 body {
@@ -28,7 +67,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background: radial-gradient(circle at top left, #1e293b 0%, #0f172a 100%);
+  background: var(--body-bg);
   overflow: hidden;
 }
 
@@ -40,8 +79,7 @@ body {
   align-items: center;
   padding: 40px;
   box-sizing: border-box;
-  background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.05), transparent),
-              radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.05), transparent);
+  background: var(--root-bg);
 }
 
 .glass-panel {

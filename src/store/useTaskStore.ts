@@ -46,6 +46,7 @@ export const useTaskStore = create<TaskState>()(
         autoArchiveAtEndOfDay: true,
         lastAutoArchiveDate: '',
         lastWorkArchiveDate: '',
+        theme: 'slate',
         integrations: {
           monday: {
             apiKey: '',

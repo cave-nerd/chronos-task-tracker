@@ -5,13 +5,20 @@ import { DataManagement } from './components/DataManagement';
 import { SettingsPanel } from './components/SettingsPanel';
 import { Layout, BarChart2, Database, Clock, Settings } from 'lucide-react';
 import { useMidnightReset } from './hooks/useMidnightReset';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useTaskStore } from './store/useTaskStore';
 
 type Tab = 'tracker' | 'analytics' | 'management' | 'settings';
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('tracker');
+  const theme = useTaskStore((state) => state.settings.theme);
+  
   useMidnightReset();
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme || 'slate');
+  }, [theme]);
 
   return (
     <div 

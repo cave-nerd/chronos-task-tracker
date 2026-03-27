@@ -30,6 +30,31 @@ export const SettingsPanel = () => {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         <section className="glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
+          <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'white' }}>Appearance</h2>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            {['slate', 'midnight', 'forest', 'sunset'].map(t => (
+              <button 
+                key={t}
+                onClick={() => setLocalSettings({ ...localSettings, theme: t })}
+                style={{ 
+                  padding: '10px 15px', 
+                  borderRadius: '10px',
+                  background: (localSettings.theme || 'slate') === t ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)',
+                  border: `1px solid ${(localSettings.theme || 'slate') === t ? 'transparent' : 'var(--glass-border)'}`,
+                  color: 'white',
+                  cursor: 'pointer',
+                  textTransform: 'capitalize',
+                  transition: 'all 0.2s',
+                  fontWeight: (localSettings.theme || 'slate') === t ? 600 : 400
+                }}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
           <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'white' }}>Automated Archiving</h2>
           
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
