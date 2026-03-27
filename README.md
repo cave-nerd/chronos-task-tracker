@@ -9,7 +9,7 @@
 [![License: GPL v3](https://img.shields.io/badge/license-GPLv3-10b981?style=flat-square)](LICENSE)
 [![Built with Electron](https://img.shields.io/badge/built%20with-Electron-47848f?style=flat-square&logo=electron)](https://www.electronjs.org/)
 
-[Download](#-download) · [Features](#-features) · [Getting Started](#-getting-started) · [Monday.com Integration](#-mondaycom-integration) · [Contributing](#-contributing)
+[Download](#-download) · [Features](#-features) · [Getting Started](#-getting-started) · [Integrations](#-integrations) · [Contributing](#-contributing)
 
 </div>
 
@@ -26,6 +26,8 @@
 | 🏃 | **All-Nighter Mode** | Tracks sessions that span midnight without splitting the entry |
 | 🔁 | **Recurring Tasks** | Mark tasks as recurring so they reappear each day automatically |
 | 📤 | **Import / Export** | Back up and restore your time data as JSON |
+| 🎨 | **Themes** | Choose from multiple UI themes, persisted between sessions |
+| 📆 | **Calendar Subscription** | Subscribe to iCal/CalDAV calendars; today's events are automatically added as tasks |
 | 🔗 | **Monday.com Sync** | Upload daily time entries directly to a Monday.com board |
 
 ---
@@ -79,7 +81,9 @@ Builds are output to `release/<version>/`.
 
 ---
 
-## 🔗 Monday.com Integration
+## 🔗 Integrations
+
+### Monday.com
 
 Chronos can push your daily time entries directly to a Monday.com board at the end of the day.
 
@@ -92,6 +96,17 @@ Chronos can push your daily time entries directly to a Monday.com board at the e
 
 > Upload is always manual — nothing is sent automatically.
 
+### Calendar Subscription
+
+Chronos can pull today's events from any iCal/CalDAV calendar and automatically add them as tasks.
+
+**Setup:**
+1. Open the **Integrations** panel inside the app
+2. Paste one or more calendar subscription URLs (must be `http://` or `https://`)
+3. Click **Sync Calendars** — today's events are added as tasks instantly
+
+> Only HTTP and HTTPS URLs are accepted. `file://` and other schemes are blocked.
+
 ---
 
 ## 🗂 Project Structure
@@ -99,8 +114,9 @@ Chronos can push your daily time entries directly to a Monday.com board at the e
 ```
 chronos-task-tracker/
 ├── electron/
-│   ├── main.ts          # Electron main process
-│   └── preload.ts       # Preload bridge
+│   ├── main.ts              # Electron main process (IPC handlers, calendar fetch)
+│   ├── preload.ts           # Preload bridge
+│   └── electron-env.d.ts   # Electron environment types
 ├── src/
 │   ├── components/
 │   │   ├── TaskForm.tsx           # Create / edit tasks
@@ -108,8 +124,8 @@ chronos-task-tracker/
 │   │   ├── TaskList.tsx           # Task list view
 │   │   ├── TimeAnalytics.tsx      # Charts and daily summaries
 │   │   ├── DataManagement.tsx     # Import / export
-│   │   ├── IntegrationsPanel.tsx  # Monday.com configuration and sync
-│   │   └── SettingsPanel.tsx      # App preferences
+│   │   ├── IntegrationsPanel.tsx  # Monday.com and calendar integrations
+│   │   └── SettingsPanel.tsx      # App preferences and theme selection
 │   ├── hooks/
 │   │   ├── useMidnightReset.ts    # Daily session rollover
 │   │   └── useTimer.ts            # Live timer logic
