@@ -43,6 +43,11 @@ export interface Settings {
       }>;
       employeeName?: string; // Still needed as a global or per-mapping? Let's keep global for now.
     };
+    calendar?: {
+      url: string;
+      autoSync: boolean;
+      lastSyncDate?: string;
+    };
   };
 }
 

@@ -1,4 +1,4 @@
-import { Share2, RefreshCw, CheckCircle2, Search, Table, Layers } from 'lucide-react';
+import { Share2, RefreshCw, CheckCircle2, Search, Table, Layers, Calendar } from 'lucide-react';
 import { useTaskStore } from '../store/useTaskStore';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,8 +7,9 @@ import { getBoardMetadata, BoardMetadata, getSampleItems } from '../lib/monday';
 const READ_ONLY_TYPES = ['formula', 'lookup', 'progress', 'auto_number', 'creation_log', 'last_updated', 'pulse_id', 'mirror', 'time_tracking'];
 
 export const IntegrationsPanel = () => {
-  const { settings, updateSettings, syncToMonday, history } = useTaskStore();
+  const { settings, updateSettings, syncToMonday, history, syncCalendarTasks } = useTaskStore();
   const [syncing, setSyncing] = useState(false);
+  const [calendarSyncing, setCalendarSyncing] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [metadata, setMetadata] = useState<BoardMetadata | null>(null);
   const [syncResult, setSyncResult] = useState<{ success: boolean; count: number; error?: string } | null>(null);
@@ -17,6 +18,22 @@ export const IntegrationsPanel = () => {
   const [debugLoading, setDebugLoading] = useState(false);
 
   const monday = settings.integrations?.monday || { apiKey: '', boardId: '', mappings: [], employeeName: '' };
+  const calendar = settings.integrations?.calendar || { url: '', autoSync: false };
+
+  const handleUpdateCalendar = (field: string, value: any) => {
+    updateSettings({
+      integrations: {
+        ...settings.integrations,
+        calendar: { ...calendar, [field]: value }
+      }
+    });
+  };
+
+  const handleCalendarSync = async () => {
+    setCalendarSyncing(true);
+    await syncCalendarTasks();
+    setCalendarSyncing(false);
+  };
 
   const handleUpdateMonday = (field: string, value: any) => {
     updateSettings({
@@ -426,6 +443,61 @@ export const IntegrationsPanel = () => {
                 )}
               </AnimatePresence>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)', marginTop: '2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+          <Calendar className="text-accent-secondary" size={24} />
+          <h2 style={{ fontSize: '1.25rem', margin: 0, color: 'white' }}>Calendar Integration</h2>
+        </div>
+        
+        <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', marginBottom: '1.5rem' }}>
+          Provide an iCal Subscription URL (Google Calendar, Outlook, Apple Calendar) to automatically create tasks for events scheduled today.
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.5rem', color: 'rgba(255,255,255,0.8)' }}>iCal Subscription URL (*.ics)</label>
+            <input 
+              type="text" 
+              placeholder="https://..."
+              value={calendar.url}
+              onChange={(e) => handleUpdateCalendar('url', e.target.value)}
+              className="glass-input"
+              style={{ width: '100%', fontFamily: 'monospace', fontSize: '0.8rem' }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
+            <div>
+              <div style={{ fontWeight: 500, color: 'white', fontSize: '0.9rem' }}>Auto-Sync Daily</div>
+              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>Automatically fetch events when the application starts</div>
+            </div>
+            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+              <input 
+                type="checkbox"
+                checked={calendar.autoSync}
+                onChange={(e) => handleUpdateCalendar('autoSync', e.target.checked)}
+                style={{ width: '18px', height: '18px', accentColor: 'var(--accent-secondary)' }}
+              />
+            </label>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.5rem' }}>
+            <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>
+              {calendar.lastSyncDate ? `Last synced: ${calendar.lastSyncDate}` : 'Never synced'}
+            </span>
+            <button 
+              onClick={handleCalendarSync}
+              disabled={calendarSyncing || !calendar.url}
+              className="btn-primary"
+              style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            >
+              <RefreshCw size={14} className={calendarSyncing ? 'animate-spin' : ''} />
+              {calendarSyncing ? 'Syncing...' : 'Sync Events for Today'}
+            </button>
           </div>
         </div>
       </div>

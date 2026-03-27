@@ -6,5 +6,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onMainMessage: (callback: (message: string) => void) => {
     ipcRenderer.on('main-process-message', (_event, value) => callback(value))
   },
-  // Add other specific IPC wrappers here as needed
+  fetchCalendar: (url: string) => ipcRenderer.invoke('fetch-calendar', url),
 })

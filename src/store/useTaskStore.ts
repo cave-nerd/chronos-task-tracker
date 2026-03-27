@@ -9,6 +9,7 @@ export interface SyncResult {
 }
 import { format } from 'date-fns';
 import { syncTaskToMonday } from '../lib/monday';
+import { parseICalForToday } from '../lib/calendar';
 
 interface TaskState {
   tasks: Task[];
@@ -32,6 +33,7 @@ interface TaskState {
   toggleAllNighter: (id: string) => void;
   toggleRecurring: (id: string) => void;
   syncToMonday: () => Promise<SyncResult>;
+  syncCalendarTasks: () => Promise<boolean>;
 }
 
 export const useTaskStore = create<TaskState>()(
@@ -53,6 +55,10 @@ export const useTaskStore = create<TaskState>()(
             boardId: '',
             mappings: [],
             employeeName: ''
+          },
+          calendar: {
+            url: '',
+            autoSync: false,
           }
         }
       },
@@ -378,6 +384,53 @@ export const useTaskStore = create<TaskState>()(
 
         set({ history: newHistory });
         return { success: true, syncedCount };
+      },
+
+      syncCalendarTasks: async () => {
+        const { settings, tasks, addTask, updateSettings } = get();
+        const calendar = settings.integrations?.calendar;
+        
+        if (!calendar || !calendar.url) {
+          return false;
+        }
+
+        try {
+          // Fetch raw iCal data securely bypassing CORS via the main process
+          const icalData = await window.electronAPI.fetchCalendar(calendar.url);
+          
+          // Parse events looking specifically for those occurring "Today"
+          const events = parseICalForToday(icalData);
+          
+          let tasksCreated = 0;
+
+          events.forEach(event => {
+            // Prevent duplicates: Only add if an active task with the same name doesn't exist already
+            const exists = tasks.some(t => !t.archived && t.name === event.title);
+            if (!exists) {
+              addTask(event.title, event.description);
+              tasksCreated++;
+            }
+          });
+
+          // Update last sync date
+          const today = new Date();
+          const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+          
+          updateSettings({
+            integrations: {
+              ...settings.integrations,
+              calendar: {
+                ...calendar,
+                lastSyncDate: todayString
+              }
+            }
+          });
+
+          return true;
+        } catch (error) {
+          console.error("Calendar Sync Failed:", error);
+          return false;
+        }
       }
     }),
     {

@@ -13,12 +13,22 @@ type Tab = 'tracker' | 'analytics' | 'management' | 'settings';
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('tracker');
   const theme = useTaskStore((state) => state.settings.theme);
+  const calendar = useTaskStore((state) => state.settings.integrations?.calendar);
+  const syncCalendarTasks = useTaskStore((state) => state.syncCalendarTasks);
   
   useMidnightReset();
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme || 'slate');
   }, [theme]);
+
+  useEffect(() => {
+    if (calendar?.autoSync && calendar.url) {
+      // Intentionally wrapped in setTimeout to not block initial render paint
+      setTimeout(() => syncCalendarTasks().catch(console.error), 1000);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div 
