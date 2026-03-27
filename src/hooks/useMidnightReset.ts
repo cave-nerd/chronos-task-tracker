@@ -12,6 +12,7 @@ export const useMidnightReset = () => {
       const todayString = `${nowDate.getFullYear()}-${String(nowDate.getMonth() + 1).padStart(2, '0')}-${String(nowDate.getDate()).padStart(2, '0')}`;
       
       let shouldArchive = false;
+      let archiveType: 'work' | 'midnight' | null = null;
 
       // 1. Work Hours Auto-Archive
       if (state.settings.enableWorkHours && state.settings.autoArchiveAtEndOfDay) {
@@ -19,21 +20,23 @@ export const useMidnightReset = () => {
         const workEndTime = new Date(nowDate);
         workEndTime.setHours(hours, minutes, 0, 0);
 
-        if (now >= workEndTime.getTime() && state.settings.lastAutoArchiveDate !== todayString) {
+        if (now >= workEndTime.getTime() && state.settings.lastWorkArchiveDate !== todayString) {
           shouldArchive = true;
+          archiveType = 'work';
         }
       }
 
       // 2. Midnight Default Auto-Archive
       if (!shouldArchive && state.settings.lastAutoArchiveDate && state.settings.lastAutoArchiveDate !== todayString) {
         shouldArchive = true;
+        archiveType = 'midnight';
       }
 
       // 3. Init or Archive
       if (!state.settings.lastAutoArchiveDate) {
-        state.updateSettings({ lastAutoArchiveDate: todayString });
+        state.updateSettings({ lastAutoArchiveDate: todayString, lastWorkArchiveDate: todayString });
       } else if (shouldArchive) {
-        state.autoArchiveTasks(todayString);
+        state.autoArchiveTasks(todayString, archiveType || 'midnight');
       }
 
       // 4. Split Task for All Nighters

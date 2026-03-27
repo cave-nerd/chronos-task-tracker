@@ -28,7 +28,7 @@ interface TaskState {
   exportData: () => string;
   importData: (jsonData: string) => boolean;
   updateSettings: (settings: Partial<Settings>) => void;
-  autoArchiveTasks: (archiveDate: string) => void;
+  autoArchiveTasks: (archiveDate: string, type?: 'work' | 'midnight') => void;
   toggleAllNighter: (id: string) => void;
   toggleRecurring: (id: string) => void;
   syncToMonday: () => Promise<SyncResult>;
@@ -45,6 +45,7 @@ export const useTaskStore = create<TaskState>()(
         workHourEnd: '17:00',
         autoArchiveAtEndOfDay: true,
         lastAutoArchiveDate: '',
+        lastWorkArchiveDate: '',
         integrations: {
           monday: {
             apiKey: '',
@@ -192,7 +193,7 @@ export const useTaskStore = create<TaskState>()(
         )
       })),
 
-      autoArchiveTasks: (archiveDate) => {
+      autoArchiveTasks: (archiveDate, type = 'midnight') => {
         const now = Date.now();
         set((state) => {
           let newTasks = [...state.tasks];
@@ -246,7 +247,11 @@ export const useTaskStore = create<TaskState>()(
           return { 
             tasks: newTasks, 
             history: newHistory,
-            settings: { ...state.settings, lastAutoArchiveDate: archiveDate }
+            settings: { 
+              ...state.settings, 
+              lastAutoArchiveDate: archiveDate,
+              ...(type === 'work' ? { lastWorkArchiveDate: archiveDate } : {})
+            }
           };
         });
       },

@@ -27,6 +27,7 @@ export interface Settings {
   workHourEnd: string; // HH:mm format, e.g., "17:00"
   autoArchiveAtEndOfDay: boolean;
   lastAutoArchiveDate: string; // YYYY-MM-DD
+  lastWorkArchiveDate?: string; // YYYY-MM-DD
   integrations?: {
     monday?: {
       apiKey: string;
