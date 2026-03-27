@@ -76,6 +76,10 @@ app.on('activate', () => {
 app.whenReady().then(() => {
   ipcMain.handle('fetch-calendar', async (_event, url: string) => {
     try {
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        throw new Error('Invalid URL scheme: Must be HTTP or HTTPS');
+      }
+      
       const response = await fetch(url);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       return await response.text();
