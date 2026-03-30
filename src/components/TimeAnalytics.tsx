@@ -123,14 +123,16 @@ export const TimeAnalytics = () => {
       {/* Header & Range Selector */}
       <div className="flex items-center justify-between sticky top-0 bg-[#0f172a]/80 backdrop-blur-md z-10 py-2">
         <div className="flex items-center gap-3">
-          <BarChart3 className="text-sky-400" size={24} />
+          <BarChart3 aria-hidden="true" className="text-sky-400" size={24} />
           <h2 className="text-xl font-bold text-white">Analytics</h2>
         </div>
-        
-        <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
+
+        <div role="radiogroup" aria-label="Time range" className="flex bg-white/5 p-1 rounded-xl border border-white/10">
           {(['daily', 'weekly', 'monthly', 'yearly'] as TimeRange[]).map((r) => (
             <button
               key={r}
+              role="radio"
+              aria-checked={range === r}
               onClick={() => setRange(r)}
               className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
                 range === r ? 'bg-sky-500 text-white shadow-lg' : 'text-white/50 hover:text-white'
@@ -144,42 +146,50 @@ export const TimeAnalytics = () => {
 
       {/* Date Navigation */}
       <div className="flex items-center justify-between glass-panel p-4">
-        <button onClick={() => navigateRange('prev')} className="btn-icon">
-          <ChevronLeft size={20} />
+        <button onClick={() => navigateRange('prev')} aria-label={`Previous ${range}`} className="btn-icon">
+          <ChevronLeft size={20} aria-hidden="true" />
         </button>
-        <div className="flex items-center gap-2 font-medium">
-          <Calendar size={18} className="text-sky-400" />
+        <div className="flex items-center gap-2 font-medium" aria-live="polite" aria-atomic="true">
+          <Calendar size={18} aria-hidden="true" className="text-sky-400" />
           <span>
             {range === 'daily' && format(referenceDate, 'MMMM do, yyyy')}
-            {range === 'weekly' && `${format(startOfWeek(referenceDate, { weekStartsOn : 1 }), 'MMM d')} - ${format(endOfWeek(referenceDate, { weekStartsOn : 1 }), 'MMM d, yyyy')}`}
+            {range === 'weekly' && `${format(startOfWeek(referenceDate, { weekStartsOn: 1 }), 'MMM d')} - ${format(endOfWeek(referenceDate, { weekStartsOn: 1 }), 'MMM d, yyyy')}`}
             {range === 'monthly' && format(referenceDate, 'MMMM yyyy')}
             {range === 'yearly' && format(referenceDate, 'yyyy')}
           </span>
         </div>
-        <button onClick={() => navigateRange('next')} className="btn-icon">
-          <ChevronRight size={20} />
+        <button onClick={() => navigateRange('next')} aria-label={`Next ${range}`} className="btn-icon">
+          <ChevronRight size={20} aria-hidden="true" />
         </button>
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-2 gap-4">
+      <div role="region" aria-label="Analytics summary" className="grid grid-cols-2 gap-4">
         <div className="glass-panel p-4 flex flex-col gap-1">
           <span className="text-xs text-white/50 flex items-center gap-1">
-            <Clock size={12} /> Total Time
+            <Clock size={12} aria-hidden="true" /> Total Time
           </span>
           <span className="text-2xl font-bold text-sky-400">{formatTime(totalRangeSeconds)}</span>
         </div>
         <div className="glass-panel p-4 flex flex-col gap-1">
           <span className="text-xs text-white/50 flex items-center gap-1">
-            <Layers size={12} /> Tasks Tracked
+            <Layers size={12} aria-hidden="true" /> Tasks Tracked
           </span>
           <span className="text-2xl font-bold text-emerald-400">{taskBreakdown.length}</span>
         </div>
       </div>
 
       {/* Primary Chart */}
-      <div className="glass-panel p-6 w-full" style={{ height: '350px', minHeight: '350px' }}>
-        <ResponsiveContainer width="100%" height="100%">
+      <div
+        className="glass-panel p-6 w-full"
+        style={{ height: '350px', minHeight: '350px' }}
+        role="img"
+        aria-label={`${range.charAt(0).toUpperCase() + range.slice(1)} time tracking chart. Total: ${formatTime(totalRangeSeconds)} across ${taskBreakdown.length} tasks.`}
+      >
+        <ResponsiveContainer
+          width="100%"
+          height="100%"
+        >
           <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
             <XAxis 
@@ -219,31 +229,41 @@ export const TimeAnalytics = () => {
       {/* Detailed Breakdown */}
       <div className="glass-panel p-6 mb-4">
         <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-          <PieIcon size={16} className="text-sky-400" /> Task Distribution
+          <PieIcon size={16} aria-hidden="true" className="text-sky-400" /> Task Distribution
         </h3>
-        <div className="flex flex-col gap-3">
+        <ul aria-label="Task time distribution" className="flex flex-col gap-3 list-none">
           {taskBreakdown.length > 0 ? (
-            taskBreakdown.map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium">{item.name}</span>
-                  <div className="w-48 h-1 bg-white/10 rounded-full mt-2 overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${(item.value / totalRangeSeconds) * 100}%` }}
-                      className="h-full bg-sky-500"
-                    />
+            taskBreakdown.map((item, idx) => {
+              const pct = totalRangeSeconds > 0 ? ((item.value / totalRangeSeconds) * 100).toFixed(1) : '0';
+              return (
+                <li key={idx} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">{item.name}</span>
+                    <div
+                      role="progressbar"
+                      aria-label={`${item.name}: ${pct}% of total time`}
+                      aria-valuenow={parseFloat(pct)}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      className="w-48 h-1 bg-white/10 rounded-full mt-2 overflow-hidden"
+                    >
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${pct}%` }}
+                        className="h-full bg-sky-500"
+                      />
+                    </div>
                   </div>
-                </div>
-                <span className="text-sm font-bold text-white/80">{item.formatted}</span>
-              </div>
-            ))
+                  <span className="text-sm font-bold text-white/80">{item.formatted}</span>
+                </li>
+              );
+            })
           ) : (
-            <div className="text-center py-8 text-white/30 text-sm italic">
+            <li className="text-center py-8 text-white/30 text-sm italic" aria-live="polite">
               No time entries for this period
-            </div>
+            </li>
           )}
-        </div>
+        </ul>
       </div>
     </div>
   );

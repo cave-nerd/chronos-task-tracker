@@ -45,10 +45,11 @@ function App() {
       }}
     >
       {/* Sidebar */}
-      <div 
-        style={{ 
-          width: '80px', 
-          background: 'rgba(255,255,255,0.02)', 
+      <nav
+        aria-label="Main navigation"
+        style={{
+          width: '80px',
+          background: 'rgba(255,255,255,0.02)',
           borderRight: '1px solid var(--glass-border)',
           display: 'flex',
           flexDirection: 'column',
@@ -57,63 +58,67 @@ function App() {
           gap: '2rem'
         }}
       >
-        <div style={{ color: 'var(--accent-primary)', marginBottom: '1rem' }}>
+        <div aria-hidden="true" style={{ color: 'var(--accent-primary)', marginBottom: '1rem' }}>
           <Clock size={32} />
         </div>
-        
-        <button 
-          title="Task Tracker"
-          className="btn-icon" 
+
+        <button
+          aria-label="Task Tracker"
+          aria-current={activeTab === 'tracker' ? 'page' : undefined}
+          className="btn-icon"
           onClick={() => setActiveTab('tracker')}
-          style={{ 
+          style={{
             background: activeTab === 'tracker' ? 'rgba(56, 189, 248, 0.2)' : 'transparent',
             color: activeTab === 'tracker' ? 'var(--accent-primary)' : 'rgba(255,255,255,0.5)',
             border: activeTab === 'tracker' ? '1px solid var(--accent-primary)' : '1px solid transparent'
           }}
         >
-          <Layout size={24} />
+          <Layout size={24} aria-hidden="true" />
         </button>
 
-        <button 
-          title="Analytics"
-          className="btn-icon" 
+        <button
+          aria-label="Analytics"
+          aria-current={activeTab === 'analytics' ? 'page' : undefined}
+          className="btn-icon"
           onClick={() => setActiveTab('analytics')}
-          style={{ 
+          style={{
             background: activeTab === 'analytics' ? 'rgba(56, 189, 248, 0.2)' : 'transparent',
             color: activeTab === 'analytics' ? 'var(--accent-primary)' : 'rgba(255,255,255,0.5)',
             border: activeTab === 'analytics' ? '1px solid var(--accent-primary)' : '1px solid transparent'
           }}
         >
-          <BarChart2 size={24} />
+          <BarChart2 size={24} aria-hidden="true" />
         </button>
 
-        <button 
-          title="Data Management"
-          className="btn-icon" 
+        <button
+          aria-label="Data Management"
+          aria-current={activeTab === 'management' ? 'page' : undefined}
+          className="btn-icon"
           onClick={() => setActiveTab('management')}
-          style={{ 
+          style={{
             background: activeTab === 'management' ? 'rgba(56, 189, 248, 0.2)' : 'transparent',
             color: activeTab === 'management' ? 'var(--accent-primary)' : 'rgba(255,255,255,0.5)',
             border: activeTab === 'management' ? '1px solid var(--accent-primary)' : '1px solid transparent'
           }}
         >
-          <Database size={24} />
+          <Database size={24} aria-hidden="true" />
         </button>
 
-        <button 
-          title="Settings"
-          className="btn-icon" 
+        <button
+          aria-label="Settings"
+          aria-current={activeTab === 'settings' ? 'page' : undefined}
+          className="btn-icon"
           onClick={() => setActiveTab('settings')}
-          style={{ 
+          style={{
             marginTop: 'auto',
             background: activeTab === 'settings' ? 'rgba(56, 189, 248, 0.2)' : 'transparent',
             color: activeTab === 'settings' ? 'var(--accent-primary)' : 'rgba(255,255,255,0.5)',
             border: activeTab === 'settings' ? '1px solid var(--accent-primary)' : '1px solid transparent'
           }}
         >
-          <Settings size={24} />
+          <Settings size={24} aria-hidden="true" />
         </button>
-      </div>
+      </nav>
 
       {/* Main Content */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>

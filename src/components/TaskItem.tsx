@@ -59,15 +59,19 @@ export const TaskItem = ({ task }: TaskItemProps) => {
       <div style={{ flex: 1, marginRight: '1rem' }}>
         {isEditing ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <input 
-              value={editName} 
+            <label htmlFor={`edit-name-${task.id}`} style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>Task name</label>
+            <input
+              id={`edit-name-${task.id}`}
+              value={editName}
               onChange={(e) => setEditName(e.target.value)}
               className="glass-input"
               style={{ padding: '4px 8px', fontSize: '1rem', width: '100%' }}
               autoFocus
             />
-            <input 
-              value={editDescription} 
+            <label htmlFor={`edit-desc-${task.id}`} style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>Description</label>
+            <input
+              id={`edit-desc-${task.id}`}
+              value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
               className="glass-input"
               style={{ padding: '4px 8px', fontSize: '0.8rem', width: '100%' }}
@@ -88,15 +92,19 @@ export const TaskItem = ({ task }: TaskItemProps) => {
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         {!isEditing && (
-          <div style={{ 
-            fontFamily: 'monospace', 
-            fontSize: '1.25rem', 
-            fontWeight: 'bold',
-            color: task.isRunning ? 'var(--accent-primary)' : 'white',
-            textShadow: task.isRunning ? '0 0 10px rgba(56, 189, 248, 0.4)' : 'none',
-            minWidth: '85px',
-            textAlign: 'right'
-          }}>
+          <div
+            aria-label={`Elapsed time: ${formatTime(displayTime)}`}
+            aria-live="off"
+            style={{
+              fontFamily: 'monospace',
+              fontSize: '1.25rem',
+              fontWeight: 'bold',
+              color: task.isRunning ? 'var(--accent-primary)' : 'white',
+              textShadow: task.isRunning ? '0 0 10px rgba(56, 189, 248, 0.4)' : 'none',
+              minWidth: '85px',
+              textAlign: 'right'
+            }}
+          >
             {formatTime(displayTime)}
           </div>
         )}
@@ -104,62 +112,64 @@ export const TaskItem = ({ task }: TaskItemProps) => {
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           {isEditing ? (
             <>
-              <button className="btn-icon" style={{ color: 'var(--accent-success)' }} onClick={handleSave}>
-                <Check size={18} />
+              <button aria-label="Save changes" className="btn-icon" style={{ color: 'var(--accent-success)' }} onClick={handleSave}>
+                <Check size={18} aria-hidden="true" />
               </button>
-              <button className="btn-icon" style={{ color: 'var(--accent-danger)' }} onClick={handleCancel}>
-                <X size={18} />
+              <button aria-label="Cancel editing" className="btn-icon" style={{ color: 'var(--accent-danger)' }} onClick={handleCancel}>
+                <X size={18} aria-hidden="true" />
               </button>
             </>
           ) : (
             <>
               {!task.isRunning ? (
-                <button className="btn-icon" onClick={() => startTask(task.id)}>
-                  <Play size={18} fill="currentColor" />
+                <button aria-label={`Start ${task.name}`} className="btn-icon" onClick={() => startTask(task.id)}>
+                  <Play size={18} aria-hidden="true" fill="currentColor" />
                 </button>
               ) : (
-                <button className="btn-icon" onClick={() => pauseTask(task.id)}>
-                  <Pause size={18} fill="currentColor" />
+                <button aria-label={`Pause ${task.name}`} className="btn-icon" onClick={() => pauseTask(task.id)}>
+                  <Pause size={18} aria-hidden="true" fill="currentColor" />
                 </button>
               )}
-              
-              <button className="btn-icon" onClick={() => stopTask(task.id)}>
-                <Square size={18} fill="currentColor" />
+
+              <button aria-label={`Stop ${task.name}`} className="btn-icon" onClick={() => stopTask(task.id)}>
+                <Square size={18} aria-hidden="true" fill="currentColor" />
               </button>
 
-              <button className="btn-icon" onClick={() => setIsEditing(true)}>
-                <Edit2 size={18} />
+              <button aria-label={`Edit ${task.name}`} className="btn-icon" onClick={() => setIsEditing(true)}>
+                <Edit2 size={18} aria-hidden="true" />
               </button>
 
-              <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)', height: '24px', margin: '0 4px' }} />
+              <div aria-hidden="true" style={{ width: '1px', background: 'rgba(255,255,255,0.1)', height: '24px', margin: '0 4px' }} />
 
-              <button 
-                className="btn-icon" 
+              <button
+                className="btn-icon"
+                aria-label={task.allNighter ? 'Disable all-nighter mode' : 'Enable all-nighter mode (prevent auto-archive)'}
+                aria-pressed={task.allNighter}
                 style={{ color: task.allNighter ? 'var(--accent-warning, #f59e0b)' : 'rgba(255,255,255,0.3)' }}
                 onClick={() => toggleAllNighter(task.id)}
-                title="All-Nighter (Prevent auto-archive)"
               >
-                <Moon size={18} />
+                <Moon size={18} aria-hidden="true" />
               </button>
 
-              <button 
-                className="btn-icon" 
+              <button
+                className="btn-icon"
+                aria-label={task.isRecurring ? 'Disable recurring task' : 'Enable recurring task (regenerate daily)'}
+                aria-pressed={task.isRecurring}
                 style={{ color: task.isRecurring ? 'var(--accent-primary)' : 'rgba(255,255,255,0.3)' }}
                 onClick={() => toggleRecurring(task.id)}
-                title="Recurring Task (Regenerate daily)"
               >
-                <Repeat size={18} />
+                <Repeat size={18} aria-hidden="true" />
               </button>
 
-              <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)', height: '24px', margin: '0 4px' }} />
+              <div aria-hidden="true" style={{ width: '1px', background: 'rgba(255,255,255,0.1)', height: '24px', margin: '0 4px' }} />
 
-              <button 
-                className="btn-icon" 
+              <button
+                className="btn-icon"
+                aria-label={`Archive ${task.name}`}
                 style={{ color: 'var(--accent-danger)' }}
                 onClick={() => archiveTask(task.id)}
-                title="Archive Task"
               >
-                <Trash2 size={18} />
+                <Trash2 size={18} aria-hidden="true" />
               </button>
             </>
           )}

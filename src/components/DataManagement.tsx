@@ -46,7 +46,7 @@ export const DataManagement = () => {
       style={{ padding: '2rem', height: '100%', overflowY: 'auto' }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
-        <Database className="text-accent-primary" size={28} />
+        <Database aria-hidden="true" className="text-accent-primary" size={28} />
         <h1 style={{ fontSize: '1.8rem', fontWeight: 700, margin: 0 }}>Data Management</h1>
       </div>
 
@@ -58,24 +58,24 @@ export const DataManagement = () => {
           </p>
           <div style={{ display: 'flex', gap: '1rem' }}>
             <button onClick={handleExport} className="btn-primary" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-              <Download size={18} />
+              <Download size={18} aria-hidden="true" />
               Export Data
             </button>
             <label className="btn-primary" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer', background: 'rgba(255,255,255,0.1)' }}>
-              <Upload size={18} />
+              <Upload size={18} aria-hidden="true" />
               Import Data
-              <input type="file" accept=".json" onChange={handleImport} style={{ display: 'none' }} />
+              <input type="file" accept=".json" onChange={handleImport} aria-label="Import data from JSON file" style={{ display: 'none' }} />
             </label>
           </div>
         </section>
 
         <section className="glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
           <h2 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--accent-danger)' }}>Danger Zone</h2>
-          <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', marginBottom: '1.5rem' }}>
+          <p id="danger-zone-desc" style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', marginBottom: '1.5rem' }}>
             Clearing your history will remove all logged time entries permanently. Tasks will remain.
           </p>
-          <button onClick={handleClearHistory} className="btn-primary" style={{ width: '100%', background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-danger)', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
-            <Trash2 size={18} style={{ marginRight: '0.5rem' }} />
+          <button onClick={handleClearHistory} className="btn-primary" aria-describedby="danger-zone-desc" style={{ width: '100%', background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-danger)', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+            <Trash2 size={18} aria-hidden="true" style={{ marginRight: '0.5rem' }} />
             Clear All History
           </button>
         </section>

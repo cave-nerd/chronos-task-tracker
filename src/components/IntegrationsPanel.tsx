@@ -137,7 +137,7 @@ export const IntegrationsPanel = () => {
   return (
     <section className="glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)', marginTop: '1.5rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
-        <Share2 className="text-accent-primary" size={24} />
+        <Share2 aria-hidden="true" className="text-accent-primary" size={24} />
         <h2 style={{ fontSize: '1.2rem', fontWeight: 600, margin: 0 }}>External Integrations</h2>
       </div>
 
@@ -150,8 +150,9 @@ export const IntegrationsPanel = () => {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', marginBottom: '0.4rem' }}>API Key</label>
-              <input 
+              <label htmlFor="monday-api-key" style={{ display: 'block', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', marginBottom: '0.4rem' }}>API Key</label>
+              <input
+                id="monday-api-key"
                 type="password"
                 value={monday.apiKey}
                 onChange={(e) => handleUpdateMonday('apiKey', e.target.value)}
@@ -163,8 +164,9 @@ export const IntegrationsPanel = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'flex-end' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', marginBottom: '0.4rem' }}>Board ID</label>
-                <input 
+                <label htmlFor="monday-board-id" style={{ display: 'block', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', marginBottom: '0.4rem' }}>Board ID</label>
+                <input
+                  id="monday-board-id"
                   type="text"
                   value={monday.boardId}
                   onChange={(e) => handleUpdateMonday('boardId', e.target.value)}
@@ -173,38 +175,39 @@ export const IntegrationsPanel = () => {
                   style={{ width: '100%', fontSize: '0.9rem' }}
                 />
               </div>
-              <button 
+              <button
                 onClick={handleVerify}
                 disabled={verifying || !monday.apiKey || !monday.boardId}
+                aria-busy={verifying}
                 className="btn-secondary"
                 style={{ height: '38px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
               >
-                <Search size={14} className={verifying ? 'animate-spin' : ''} />
-                Verify Board
+                <Search size={14} aria-hidden="true" className={verifying ? 'animate-spin' : ''} />
+                {verifying ? 'Verifying...' : 'Verify Board'}
               </button>
             </div>
 
             <AnimatePresence>
               {verifyError && (
-                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ fontSize: '0.8rem', color: '#ef4444' }}>
-                   {verifyError}
-                 </motion.div>
+                <motion.div role="alert" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ fontSize: '0.8rem', color: '#ef4444' }}>
+                  {verifyError}
+                </motion.div>
               )}
 
               {metadata && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.5rem' }}
                 >
-                  <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <CheckCircle2 size={14} />
+                  <div role="status" style={{ fontSize: '0.85rem', fontWeight: 600, color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <CheckCircle2 size={14} aria-hidden="true" />
                     Connected to: {metadata.name}
                   </div>
 
                   <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
                     <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                      <Table size={12} /> COLUMN MAPPING TABLE
+                      <Table size={12} aria-hidden="true" /> COLUMN MAPPING TABLE
                     </div>
                     
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -229,9 +232,10 @@ export const IntegrationsPanel = () => {
                               <div style={{ fontSize: '0.7rem', opacity: 0.5 }}>{col.type} ({col.id})</div>
                             </div>
                             
-                            <select 
+                            <select
                               value={mapping.source}
                               onChange={(e) => updateMapping(col.id, { source: e.target.value as any })}
+                              aria-label={`Data source for ${col.title} column`}
                               className="glass-input"
                               style={{ width: '100%', fontSize: '0.8rem', padding: '0.2rem 0.4rem' }}
                             >
@@ -248,11 +252,12 @@ export const IntegrationsPanel = () => {
 
                             <div style={{ flex: 1 }}>
                               {mapping.source === 'employee' && (
-                                <input 
+                                <input
                                   type="text"
                                   value={monday.employeeName || ''}
                                   onChange={(e) => handleUpdateMonday('employeeName', e.target.value)}
                                   placeholder="Global Name"
+                                  aria-label="Employee name for sync"
                                   className="glass-input"
                                   style={{ width: '100%', fontSize: '0.8rem', padding: '0.2rem 0.4rem' }}
                                 />
@@ -260,12 +265,13 @@ export const IntegrationsPanel = () => {
                               {mapping.source === 'static' && (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                                   <div style={{ display: 'flex', gap: '0.4rem' }}>
-                                    <input 
+                                    <input
                                       list={`options-${col.id}`}
                                       type="text"
                                       value={mapping.staticValue || ''}
                                       onChange={(e) => updateMapping(col.id, { staticValue: e.target.value })}
                                       placeholder="Value or Search..."
+                                      aria-label={`Static value for ${col.title}`}
                                       className="glass-input"
                                       style={{ flex: 1, fontSize: '0.8rem', padding: '0.2rem 0.4rem' }}
                                     />
@@ -273,33 +279,33 @@ export const IntegrationsPanel = () => {
                                       {(col.options || []).map(opt => <option key={opt} value={opt} />)}
                                       {(mapping.localOptions || []).map(opt => <option key={`local-${opt}`} value={opt} />)}
                                     </datalist>
-                                    
-                                    {mapping.staticValue && 
-                                     !(col.options || []).includes(mapping.staticValue) && 
+
+                                    {mapping.staticValue &&
+                                     !(col.options || []).includes(mapping.staticValue) &&
                                      !(mapping.localOptions || []).includes(mapping.staticValue) && (
-                                      <button 
+                                      <button
                                         onClick={() => {
                                           const currentLocal = mapping.localOptions || [];
                                           updateMapping(col.id, { localOptions: [...currentLocal, mapping.staticValue!] });
                                         }}
                                         className="btn-secondary"
+                                        aria-label={`Save "${mapping.staticValue}" to list`}
                                         style={{ padding: '0 0.5rem', fontSize: '0.7rem', height: '28px' }}
-                                        title="Save to list"
                                       >
                                         + Save
                                       </button>
                                     )}
                                   </div>
-                                  
+
                                   {(mapping.localOptions && mapping.localOptions.length > 0) && (
                                     <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap' }}>
                                       {mapping.localOptions.map(opt => (
-                                        <span 
-                                          key={opt} 
-                                          style={{ 
-                                            fontSize: '0.65rem', 
-                                            padding: '1px 6px', 
-                                            background: 'rgba(255,255,255,0.1)', 
+                                        <span
+                                          key={opt}
+                                          style={{
+                                            fontSize: '0.65rem',
+                                            padding: '1px 6px',
+                                            background: 'rgba(255,255,255,0.1)',
                                             borderRadius: '10px',
                                             display: 'flex',
                                             alignItems: 'center',
@@ -307,11 +313,12 @@ export const IntegrationsPanel = () => {
                                           }}
                                         >
                                           {opt}
-                                          <button 
+                                          <button
                                             onClick={() => {
                                               const newLocal = mapping.localOptions!.filter(o => o !== opt);
                                               updateMapping(col.id, { localOptions: newLocal });
                                             }}
+                                            aria-label={`Remove "${opt}" from list`}
                                             style={{ border: 'none', background: 'none', color: 'rgba(255,255,255,0.4)', padding: 0, cursor: 'pointer', fontSize: '0.8rem' }}
                                           >
                                             &times;
@@ -331,25 +338,28 @@ export const IntegrationsPanel = () => {
 
                   <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
                     <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                      <Layers size={12} /> TARGET GROUP
+                      <Layers size={12} aria-hidden="true" /> TARGET GROUP
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.5rem' }}>
+                    <div role="radiogroup" aria-label="Target group" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.5rem' }}>
                       {metadata.groups.map(group => (
-                        <div 
-                          key={group.id} 
+                        <button
+                          key={group.id}
+                          role="radio"
+                          aria-checked={monday.groupId === group.id}
                           onClick={() => handleUpdateMonday('groupId', group.id)}
-                          style={{ 
-                            padding: '0.5rem', 
+                          style={{
+                            padding: '0.5rem',
                             fontSize: '0.75rem',
                             background: monday.groupId === group.id ? 'rgba(var(--accent-primary-rgb), 0.2)' : 'rgba(255,255,255,0.02)',
                             borderRadius: '6px',
                             cursor: 'pointer',
                             textAlign: 'center',
-                            border: monday.groupId === group.id ? '1px solid var(--accent-primary)' : '1px solid rgba(255,255,255,0.05)'
+                            border: monday.groupId === group.id ? '1px solid var(--accent-primary)' : '1px solid rgba(255,255,255,0.05)',
+                            color: 'white'
                           }}
                         >
                           {group.title}
-                        </div>
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -358,29 +368,32 @@ export const IntegrationsPanel = () => {
             </AnimatePresence>
 
             <div style={{ marginTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ fontSize: '0.85rem' }}>
+              <div aria-label={`${unsyncedCount} unsynced entries`} style={{ fontSize: '0.85rem' }}>
                 <span style={{ color: 'rgba(255,255,255,0.6)' }}>Unsynced: </span>
                 <span style={{ fontWeight: 600, color: unsyncedCount > 0 ? 'var(--accent-primary)' : 'rgba(255,255,255,0.4)' }}>{unsyncedCount}</span>
               </div>
-              
-              <button 
+
+              <button
                 onClick={handleSync}
                 disabled={syncing || !monday.apiKey || !monday.boardId}
+                aria-busy={syncing}
                 className="btn-primary"
                 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1.25rem' }}
               >
-                <RefreshCw size={16} className={syncing ? 'animate-spin' : ''} />
+                <RefreshCw size={16} aria-hidden="true" className={syncing ? 'animate-spin' : ''} />
                 {syncing ? 'Syncing...' : 'Sync to Monday'}
               </button>
             </div>
 
             {syncResult && (
-              <motion.div 
+              <motion.div
+                role="alert"
+                aria-live="assertive"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                style={{ 
-                  padding: '0.75rem', 
-                  borderRadius: '6px', 
+                style={{
+                  padding: '0.75rem',
+                  borderRadius: '6px',
                   fontSize: '0.85rem',
                   background: syncResult.success ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
                   color: syncResult.success ? '#10b981' : '#ef4444',
@@ -393,13 +406,14 @@ export const IntegrationsPanel = () => {
             )}
 
             <div style={{ marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem' }}>
-              <button 
+              <button
                 onClick={handleDebug}
                 disabled={debugLoading || !monday.apiKey || !monday.boardId}
+                aria-busy={debugLoading}
                 className="btn-secondary"
                 style={{ width: '100%', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
               >
-                <Search size={14} className={debugLoading ? 'animate-spin' : ''} />
+                <Search size={14} aria-hidden="true" className={debugLoading ? 'animate-spin' : ''} />
                 {debugLoading ? 'Inspecting...' : 'Debug Board Data (Inspect Column Formats)'}
               </button>
 
@@ -449,7 +463,7 @@ export const IntegrationsPanel = () => {
 
       <div className="glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)', marginTop: '2rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
-          <Calendar className="text-accent-secondary" size={24} />
+          <Calendar aria-hidden="true" className="text-accent-secondary" size={24} />
           <h2 style={{ fontSize: '1.25rem', margin: 0, color: 'white' }}>Calendar Integration</h2>
         </div>
         
@@ -459,9 +473,10 @@ export const IntegrationsPanel = () => {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.5rem', color: 'rgba(255,255,255,0.8)' }}>iCal Subscription URL (*.ics)</label>
-            <input 
-              type="text" 
+            <label htmlFor="ical-url" style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.5rem', color: 'rgba(255,255,255,0.8)' }}>iCal Subscription URL (*.ics)</label>
+            <input
+              id="ical-url"
+              type="text"
               placeholder="https://..."
               value={calendar.url}
               onChange={(e) => handleUpdateCalendar('url', e.target.value)}
@@ -472,30 +487,31 @@ export const IntegrationsPanel = () => {
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
             <div>
-              <div style={{ fontWeight: 500, color: 'white', fontSize: '0.9rem' }}>Auto-Sync Daily</div>
-              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>Automatically fetch events when the application starts</div>
+              <label htmlFor="auto-sync-daily" style={{ fontWeight: 500, color: 'white', fontSize: '0.9rem', display: 'block', cursor: 'pointer' }}>Auto-Sync Daily</label>
+              <div id="auto-sync-daily-desc" style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>Automatically fetch events when the application starts</div>
             </div>
-            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-              <input 
-                type="checkbox"
-                checked={calendar.autoSync}
-                onChange={(e) => handleUpdateCalendar('autoSync', e.target.checked)}
-                style={{ width: '18px', height: '18px', accentColor: 'var(--accent-secondary)' }}
-              />
-            </label>
+            <input
+              id="auto-sync-daily"
+              type="checkbox"
+              checked={calendar.autoSync}
+              onChange={(e) => handleUpdateCalendar('autoSync', e.target.checked)}
+              aria-describedby="auto-sync-daily-desc"
+              style={{ width: '18px', height: '18px', accentColor: 'var(--accent-secondary)', cursor: 'pointer' }}
+            />
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.5rem' }}>
-            <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>
+            <span aria-live="polite" style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>
               {calendar.lastSyncDate ? `Last synced: ${calendar.lastSyncDate}` : 'Never synced'}
             </span>
-            <button 
+            <button
               onClick={handleCalendarSync}
               disabled={calendarSyncing || !calendar.url}
+              aria-busy={calendarSyncing}
               className="btn-primary"
               style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
-              <RefreshCw size={14} className={calendarSyncing ? 'animate-spin' : ''} />
+              <RefreshCw size={14} aria-hidden="true" className={calendarSyncing ? 'animate-spin' : ''} />
               {calendarSyncing ? 'Syncing...' : 'Sync Events for Today'}
             </button>
           </div>
