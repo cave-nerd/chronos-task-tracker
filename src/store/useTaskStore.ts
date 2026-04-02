@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
 import { Task, TimeEntry, Settings } from '../types';
 
 export interface SyncResult {
@@ -35,6 +35,27 @@ interface TaskState {
   syncToMonday: () => Promise<SyncResult>;
   syncCalendarTasks: () => Promise<boolean>;
 }
+
+const electronStorage: StateStorage = {
+  getItem: async (name: string): Promise<string | null> => {
+    // Only attempt to bridge if we are not in a pre-hydration SSR-like crash wrapper
+    if (typeof window !== 'undefined' && window.electronAPI) {
+      return await window.electronAPI.readStore(name);
+    }
+    return null;
+  },
+  setItem: async (name: string, value: string): Promise<void> => {
+    if (typeof window !== 'undefined' && window.electronAPI) {
+      await window.electronAPI.writeStore(name, value);
+    }
+  },
+  removeItem: async (name: string): Promise<void> => {
+    // We don't distinctly need a remove for Zustand, but you could write an empty file.
+    if (typeof window !== 'undefined' && window.electronAPI) {
+      await window.electronAPI.writeStore(name, '');
+    }
+  },
+};
 
 export const useTaskStore = create<TaskState>()(
   persist(
@@ -434,7 +455,8 @@ export const useTaskStore = create<TaskState>()(
       }
     }),
     {
-      name: 'chronos-task-storage',
+      name: 'chronos-task-storage', // name of item in the storage (must be unique)
+      storage: createJSONStorage(() => electronStorage),
     }
   )
 );

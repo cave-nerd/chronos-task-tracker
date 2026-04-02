@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+import fs from 'node:fs/promises'
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -85,6 +86,30 @@ app.whenReady().then(() => {
       return await response.text();
     } catch (error) {
       console.error('Failed to fetch calendar:', error);
+      throw error;
+    }
+  });
+  ipcMain.handle('read-store', async (_event, key: string) => {
+    try {
+      const dataPath = path.join(app.getPath('userData'), `${key}.json`);
+      const fileData = await fs.readFile(dataPath, 'utf-8');
+      return fileData;
+    } catch (error: any) {
+      // If the file doesn't exist yet, just return null so Zustand falls back to default state
+      if (error.code === 'ENOENT') {
+        return null;
+      }
+      console.error(`Failed to read store ${key}:`, error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('write-store', async (_event, key: string, value: string) => {
+    try {
+      const dataPath = path.join(app.getPath('userData'), `${key}.json`);
+      await fs.writeFile(dataPath, value, 'utf-8');
+    } catch (error) {
+      console.error(`Failed to write store ${key}:`, error);
       throw error;
     }
   });

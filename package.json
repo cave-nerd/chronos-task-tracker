@@ -2,7 +2,7 @@
   "name": "chronos-task-tracker",
   "private": true,
   "license": "GPL-3.0-only",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A local-first time tracking app with Monday.com integration",
   "author": {
     "name": "cave-nerd",
