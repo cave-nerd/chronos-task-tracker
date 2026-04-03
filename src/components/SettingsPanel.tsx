@@ -11,7 +11,10 @@ export const SettingsPanel = () => {
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
-    updateSettings(localSettings);
+    // Prevent overriding real-time integrations (Monday/Calendar) with a stale snapshot on mount.
+    const { integrations, ...safeSettings } = localSettings;
+    updateSettings(safeSettings);
+    
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
