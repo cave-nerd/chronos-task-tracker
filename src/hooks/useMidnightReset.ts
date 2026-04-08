@@ -5,6 +5,11 @@ import { isSameDay } from 'date-fns';
 export const useMidnightReset = () => {
   useEffect(() => {
     const checkMidnight = () => {
+      // Don't run until the store has finished reading from disk.
+      // Writing settings before hydration completes would save default (empty) state
+      // over the real persisted data.
+      if (!useTaskStore.persist.hasHydrated()) return;
+
       const state = useTaskStore.getState();
       const now = Date.now();
       const nowDate = new Date(now);

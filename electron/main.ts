@@ -24,7 +24,21 @@ export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
 
+// Enforce a single instance on Windows/Linux.
+// If a second instance is launched, focus the existing window and quit the new one.
+const gotTheLock = app.requestSingleInstanceLock()
+if (!gotTheLock) {
+  app.quit()
+}
+
 let win: BrowserWindow | null
+
+app.on('second-instance', () => {
+  if (win) {
+    if (win.isMinimized()) win.restore()
+    win.focus()
+  }
+})
 
 function createWindow() {
   win = new BrowserWindow({
@@ -74,7 +88,8 @@ app.on('activate', () => {
   }
 })
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  if (!gotTheLock) return
   ipcMain.handle('fetch-calendar', async (_event, url: string) => {
     try {
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
@@ -93,12 +108,13 @@ app.whenReady().then(() => {
     try {
       const dataPath = path.join(app.getPath('userData'), `${key}.json`);
       const fileData = await fs.readFile(dataPath, 'utf-8');
+      // Guard: empty or bare-null files must not be fed to JSON.parse —
+      // Zustand treats null return as "no saved state" and uses defaults without writing.
+      const trimmed = fileData.trim()
+      if (!trimmed || trimmed === 'null') return null;
       return fileData;
     } catch (error: any) {
-      // If the file doesn't exist yet, just return null so Zustand falls back to default state
-      if (error.code === 'ENOENT') {
-        return null;
-      }
+      if (error.code === 'ENOENT') return null;
       console.error(`Failed to read store ${key}:`, error);
       throw error;
     }

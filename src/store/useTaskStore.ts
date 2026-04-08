@@ -50,9 +50,10 @@ const electronStorage: StateStorage = {
     }
   },
   removeItem: async (name: string): Promise<void> => {
-    // We don't distinctly need a remove for Zustand, but you could write an empty file.
+    // Write 'null' so the read-store handler can detect and return null safely,
+    // preventing JSON.parse('') SyntaxErrors that silently wipe state on next load.
     if (typeof window !== 'undefined' && window.electronAPI) {
-      await window.electronAPI.writeStore(name, '');
+      await window.electronAPI.writeStore(name, 'null');
     }
   },
 };
